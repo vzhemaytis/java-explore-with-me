@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface HitService {
     EndpointHitDto saveNewHit(EndpointHitDto hitDto);
+
     List<ViewStatsDto> getStats(Instant start,
                                 Instant end,
                                 List<String> uris,
