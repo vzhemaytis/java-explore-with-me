@@ -11,8 +11,8 @@ import ru.ewm.stats.dto.ViewStatsDto;
 import ru.ewm.stats.service.HitService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.PastOrPresent;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -21,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HitController {
     private final HitService hitService;
+    private final String pattern = "yyyy-MM-dd HH:mm:ss";
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
 
     @PostMapping("/hit")
     public ResponseEntity<Object> saveNewHit(@RequestBody @Valid EndpointHitDto hitDto) {
@@ -30,11 +32,17 @@ public class HitController {
     }
 
     @GetMapping("stats")
-    public ResponseEntity<Object> getStats(@PastOrPresent @RequestParam(name = "start") Instant start,
-                                           @PastOrPresent @RequestParam(name = "end") Instant end,
-                                           @RequestParam(name = "uris", defaultValue = "[]") List<String> uris,
+    public ResponseEntity<Object> getStats(@RequestParam(name = "start") String start,
+                                           @RequestParam(name = "end") String end,
+                                           @RequestParam(name = "uris", defaultValue = "") List<String> uris,
                                            @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
-        List<ViewStatsDto> stats = hitService.getStats(start, end, uris, unique);
+        LocalDateTime startDateTime = LocalDateTime.parse(start, dateTimeFormatter);
+        LocalDateTime endDateTime = LocalDateTime.parse(end, dateTimeFormatter);
+        if (startDateTime.isAfter(LocalDateTime.now())) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        log.info("get stats from = {} till = {} about uris = {}", startDateTime, endDateTime, uris);
+        List<ViewStatsDto> stats = hitService.getStats(startDateTime, endDateTime, uris, unique);
         return new ResponseEntity<>(stats, HttpStatus.OK);
     }
 }

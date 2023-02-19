@@ -12,7 +12,7 @@ public class EndpointHitMapper {
                 hitDto.getId(),
                 hitDto.getApp(),
                 hitDto.getUri(),
-                hitDto.getUri(),
+                hitDto.getIp(),
                 hitDto.getTimestamp()
         );
     }
@@ -22,7 +22,7 @@ public class EndpointHitMapper {
                 hit.getId(),
                 hit.getApp(),
                 hit.getUri(),
-                hit.getUri(),
+                hit.getIp(),
                 hit.getTimestamp()
         );
     }
