@@ -4,5 +4,5 @@ CREATE TABLE IF NOT EXISTS users
     name  VARCHAR(255)                            NOT NULL,
     email VARCHAR(512)                            NOT NULL,
     CONSTRAINT pk_user PRIMARY KEY (id),
-    CONSTRAINT UQ_USER_EMAIL UNIQUE (email)
+    CONSTRAINT uq_email UNIQUE (email)
 );

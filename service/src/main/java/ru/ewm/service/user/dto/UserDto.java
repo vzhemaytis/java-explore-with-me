@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -15,11 +14,11 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class UserDto {
 
-    @NotNull
-    @Email
+    @NotBlank(message = "must not be empty")
+    @Email(message = "must be in the format of an email address")
     private String email;
     private Long id;
-    @NotBlank(message = "must not be blank")
+    @NotBlank(message = "must not be empty")
     private String name;
 
     @Override
