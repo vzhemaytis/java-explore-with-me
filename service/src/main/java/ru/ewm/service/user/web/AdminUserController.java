@@ -1,4 +1,4 @@
-package ru.ewm.service.user;
+package ru.ewm.service.user.web;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
