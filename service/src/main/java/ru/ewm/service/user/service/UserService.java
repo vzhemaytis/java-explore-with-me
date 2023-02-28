@@ -1,11 +1,12 @@
 package ru.ewm.service.user.service;
 
+import ru.ewm.service.user.dto.NewUserRequest;
 import ru.ewm.service.user.dto.UserDto;
 
 import java.util.List;
 
 public interface UserService {
-    UserDto addUser(UserDto userDto);
+    UserDto addUser(NewUserRequest userDto);
 
     void deleteUser(Long userId);
 

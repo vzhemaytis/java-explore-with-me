@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ewm.service.error.EntityNotFoundException;
+import ru.ewm.service.user.dto.NewUserRequest;
 import ru.ewm.service.user.dto.UserDto;
 import ru.ewm.service.user.mapper.UserMapper;
 import ru.ewm.service.user.model.User;
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto addUser(UserDto userDto) {
+    public UserDto addUser(NewUserRequest userDto) {
         User userToSave = toUser(userDto);
         User savedUser = userRepository.save(userToSave);
         return toUserDto(savedUser);

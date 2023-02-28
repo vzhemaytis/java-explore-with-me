@@ -8,8 +8,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -24,7 +26,7 @@ public class ErrorHandler {
         if (optionalFieldError.isPresent()) {
             FieldError fieldError = optionalFieldError.get();
             String fieldName = fieldError.getField();
-            String value = (String) fieldError.getRejectedValue();
+            String value = Objects.requireNonNull(fieldError.getRejectedValue()).toString();
             String error = fieldError.getDefaultMessage();
             message = String.format("Field: %s. Error: %s. Value: %s", fieldName, error, value);
         }
@@ -59,6 +61,32 @@ public class ErrorHandler {
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.NOT_FOUND.name());
         apiError.setReason("The required object was not found.");
+        apiError.setMessage(message);
+        apiError.setTimestamp(LocalDateTime.now());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException e) {
+        String message = e.getMessage();
+        log.warn(message);
+        ApiError apiError = new ApiError();
+        apiError.setStatus(HttpStatus.BAD_REQUEST.name());
+        apiError.setReason("Incorrectly made request.");
+        apiError.setMessage(message);
+        apiError.setTimestamp(LocalDateTime.now());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleForbiddenException(final ForbiddenException e) {
+        String message = e.getMessage();
+        log.warn(message);
+        ApiError apiError = new ApiError();
+        apiError.setStatus(HttpStatus.FORBIDDEN.name());
+        apiError.setReason("For the requested operation the conditions are not met.");
         apiError.setMessage(message);
         apiError.setTimestamp(LocalDateTime.now());
         return apiError;
