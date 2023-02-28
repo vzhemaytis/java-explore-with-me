@@ -10,10 +10,11 @@ import ru.ewm.service.error.EntityNotFoundException;
 import ru.ewm.service.error.ForbiddenException;
 import ru.ewm.service.event.dto.EventFullDto;
 import ru.ewm.service.event.dto.NewEventDto;
-import ru.ewm.service.event.dto.UpdateEventUserRequest;
+import ru.ewm.service.event.dto.UpdateEventRequest;
 import ru.ewm.service.event.mapper.EventMapper;
 import ru.ewm.service.event.model.Event;
 import ru.ewm.service.event.repository.EventRepository;
+import ru.ewm.service.event.service.CommonEventService;
 import ru.ewm.service.event.service.PrivateEventService;
 import ru.ewm.service.user.model.User;
 import ru.ewm.service.validation.EntityFoundValidation;
@@ -31,6 +32,7 @@ import static ru.ewm.service.event.mapper.EventMapper.toEventFullDto;
 public class PrivateEventServiceImpl implements PrivateEventService {
     private final EventRepository eventRepository;
     private final EntityFoundValidation entityFoundValidation;
+    private final CommonEventService commonEventService;
 
     @Transactional
     @Override
@@ -66,42 +68,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Transactional
     @Override
-    public EventFullDto updateEvent(Long userId, Long eventId, UpdateEventUserRequest updateEventUserRequest) {
+    public EventFullDto updateEvent(Long userId, Long eventId, UpdateEventRequest updateEventUserRequest) {
         Event eventToUpdate = entityFoundValidation.checkIfEventExist(eventId);
         if (!Objects.equals(eventToUpdate.getInitiator().getId(), userId)) {
             throw new ForbiddenException("Event could be updated only by initiator");
         }
-        if (eventToUpdate.getState().equals(EventState.PUBLISHED)) {
-            throw new ForbiddenException("Only pending or canceled events can be changed");
-        }
-        if (updateEventUserRequest.getAnnotation() != null) {
-            eventToUpdate.setAnnotation(updateEventUserRequest.getAnnotation());
-        }
-        if (updateEventUserRequest.getCategory() != null) {
-            Category category = entityFoundValidation.checkIfCategoryExist(updateEventUserRequest.getCategory());
-            eventToUpdate.setCategory(category);
-        }
-        if (updateEventUserRequest.getDescription() != null) {
-            eventToUpdate.setDescription(updateEventUserRequest.getDescription());
-        }
-        if (updateEventUserRequest.getEventDate() != null) {
-            if (updateEventUserRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new ForbiddenException("Event date should not earlier then in 2 hours from now");
-            }
-            eventToUpdate.setEventDate(updateEventUserRequest.getEventDate());
-        }
-        if (updateEventUserRequest.getPaid() != null) {
-            eventToUpdate.setPaid(updateEventUserRequest.getPaid());
-        }
-        if (updateEventUserRequest.getParticipantLimit() != null) {
-            eventToUpdate.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
-        }
-        if (updateEventUserRequest.getRequestModeration() != null) {
-            eventToUpdate.setRequestModeration(updateEventUserRequest.getRequestModeration());
-        }
-        if (updateEventUserRequest.getTitle() != null) {
-            eventToUpdate.setTitle(updateEventUserRequest.getTitle());
-        }
-        return toEventFullDto(eventRepository.save(eventToUpdate));
+        Event updatedEvent = commonEventService.updateEvent(eventToUpdate, updateEventUserRequest);
+        return toEventFullDto(eventRepository.save(updatedEvent));
     }
 }

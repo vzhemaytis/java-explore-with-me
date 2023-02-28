@@ -2,7 +2,7 @@ package ru.ewm.service.event.service;
 
 import ru.ewm.service.event.dto.EventFullDto;
 import ru.ewm.service.event.dto.NewEventDto;
-import ru.ewm.service.event.dto.UpdateEventUserRequest;
+import ru.ewm.service.event.dto.UpdateEventRequest;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ public interface PrivateEventService {
 
     EventFullDto getUserEvent(Long userId, Long eventId);
 
-    EventFullDto updateEvent(Long userId, Long eventId, UpdateEventUserRequest updateEventUserRequest);
+    EventFullDto updateEvent(Long userId, Long eventId, UpdateEventRequest updateEventUserRequest);
 }
