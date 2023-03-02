@@ -17,7 +17,7 @@ import ru.ewm.service.event.repository.EventRepository;
 import ru.ewm.service.event.service.CommonEventService;
 import ru.ewm.service.event.service.PrivateEventService;
 import ru.ewm.service.user.model.User;
-import ru.ewm.service.validation.EntityFoundValidation;
+import ru.ewm.service.validation.EntityFoundValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,16 +31,16 @@ import static ru.ewm.service.event.mapper.EventMapper.toEventFullDto;
 @RequiredArgsConstructor
 public class PrivateEventServiceImpl implements PrivateEventService {
     private final EventRepository eventRepository;
-    private final EntityFoundValidation entityFoundValidation;
+    private final EntityFoundValidator entityFoundValidator;
     private final CommonEventService commonEventService;
 
     @Transactional
     @Override
     public EventFullDto addEvent(Long userId, NewEventDto newEventDto) {
         Event eventToSave = toEvent(newEventDto);
-        Category category = entityFoundValidation.checkIfCategoryExist(newEventDto.getCategory());
+        Category category = entityFoundValidator.checkIfCategoryExist(newEventDto.getCategory());
         eventToSave.setCategory(category);
-        User initiator = entityFoundValidation.checkIfUserExist(userId);
+        User initiator = entityFoundValidator.checkIfUserExist(userId);
         eventToSave.setInitiator(initiator);
         eventToSave.setState(EventState.PENDING);
         eventToSave.setCreatedOn(LocalDateTime.now());
@@ -59,7 +59,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Transactional
     @Override
     public EventFullDto getUserEvent(Long userId, Long eventId) {
-        Event event = entityFoundValidation.checkIfEventExist(eventId);
+        Event event = entityFoundValidator.checkIfEventExist(eventId);
         if (!Objects.equals(event.getInitiator().getId(), userId)) {
             throw new EntityNotFoundException(eventId, Event.class.getSimpleName());
         }
@@ -69,7 +69,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Transactional
     @Override
     public EventFullDto updateEvent(Long userId, Long eventId, UpdateEventRequest updateEventUserRequest) {
-        Event eventToUpdate = entityFoundValidation.checkIfEventExist(eventId);
+        Event eventToUpdate = entityFoundValidator.checkIfEventExist(eventId);
         if (!Objects.equals(eventToUpdate.getInitiator().getId(), userId)) {
             throw new ForbiddenException("Event could be updated only by initiator");
         }

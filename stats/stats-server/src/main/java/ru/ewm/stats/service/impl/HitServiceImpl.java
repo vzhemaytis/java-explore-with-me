@@ -24,8 +24,9 @@ public class HitServiceImpl implements HitService {
     @Transactional
     @Override
     public EndpointHitDto saveNewHit(EndpointHitDto hitDto) {
-        EndpointHit hit = toEndpointHit(hitDto);
-        return toEndpointHitDto(repository.save(hit));
+        EndpointHit savedHit = repository.save(toEndpointHit(hitDto));
+
+        return toEndpointHitDto(savedHit);
     }
 
     @Transactional

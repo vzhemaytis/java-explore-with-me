@@ -39,7 +39,7 @@ public class AdminEventController {
         log.info("find event with: users = {}, states = {}, categories = {}, rangeStart = {}, rangeEnd = {}",
                 users, states, categories, rangeStart, rangeEnd);
         return new ResponseEntity<>(adminEventService
-                .findEvents(users, states, categories, rangeStart, rangeEnd, from, size), HttpStatus.OK);
+                .adminEventSearch(users, states, categories, rangeStart, rangeEnd, from, size), HttpStatus.OK);
     }
 
     @PatchMapping("/{eventId}")

@@ -31,7 +31,7 @@ public class HitController {
         return new ResponseEntity<>(savedHit, HttpStatus.CREATED);
     }
 
-    @GetMapping("stats")
+    @GetMapping("/stats")
     public ResponseEntity<Object> getStats(@RequestParam(name = "start") String start,
                                            @RequestParam(name = "end") String end,
                                            @RequestParam(name = "uris", defaultValue = "") List<String> uris,

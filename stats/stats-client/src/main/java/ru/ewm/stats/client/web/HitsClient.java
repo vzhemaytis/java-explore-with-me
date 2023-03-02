@@ -32,14 +32,14 @@ public class HitsClient extends BaseClient {
         hitDto.setUri(uri);
         hitDto.setIp(ip);
         hitDto.setTimestamp(timestamp);
-        return post("/hits", hitDto);
+        return post("/hit", hitDto);
     }
 
     public ResponseEntity<Object> getViewStats(String start, String end, List<String> uris, Boolean unique) {
         Map<String, Object> parameters = Map.of(
                 "start", start,
                 "end", end,
-                "uris", uris,
+                "uris", String.join(",", uris),
                 "unique", unique
         );
         return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);

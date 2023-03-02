@@ -8,11 +8,19 @@ import java.util.List;
 
 public interface EventRepositoryCustom {
 
-    List<Event> findEvents(List<Long> users,
-                           List<EventState> states,
-                           List<Long> categories,
-                           LocalDateTime rangeStart,
-                           LocalDateTime rangeEnd,
-                           long from,
-                           int size);
+    List<Event> adminEventSearch(List<Long> users,
+                                 List<EventState> states,
+                                 List<Long> categories,
+                                 LocalDateTime rangeStart,
+                                 LocalDateTime rangeEnd,
+                                 long from,
+                                 int size);
+
+    List<Event> publicEventSearch(String text,
+                                  List<Long> categories,
+                                  Boolean paid,
+                                  LocalDateTime rangeStart,
+                                  LocalDateTime rangeEnd,
+                                  long from,
+                                  int size);
 }

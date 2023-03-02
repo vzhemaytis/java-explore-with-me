@@ -7,7 +7,7 @@ import ru.ewm.service.constants.EventState;
 import ru.ewm.service.error.ForbiddenException;
 import ru.ewm.service.event.dto.UpdateEventRequest;
 import ru.ewm.service.event.model.Event;
-import ru.ewm.service.validation.EntityFoundValidation;
+import ru.ewm.service.validation.EntityFoundValidator;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class CommonEventServiceImpl implements ru.ewm.service.event.service.CommonEventService {
 
-    private final EntityFoundValidation entityFoundValidation;
+    private final EntityFoundValidator entityFoundValidator;
 
     @Override
     public Event updateEvent(Event eventToUpdate, UpdateEventRequest updateEventRequest) {
@@ -26,7 +26,7 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
             eventToUpdate.setAnnotation(updateEventRequest.getAnnotation());
         }
         if (updateEventRequest.getCategory() != null) {
-            Category category = entityFoundValidation.checkIfCategoryExist(updateEventRequest.getCategory());
+            Category category = entityFoundValidator.checkIfCategoryExist(updateEventRequest.getCategory());
             eventToUpdate.setCategory(category);
         }
         if (updateEventRequest.getDescription() != null) {

@@ -19,13 +19,13 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
     private EntityManager entityManager;
 
     @Override
-    public List<Event> findEvents(List<Long> users,
-                                  List<EventState> states,
-                                  List<Long> categories,
-                                  LocalDateTime rangeStart,
-                                  LocalDateTime rangeEnd,
-                                  long from,
-                                  int size) {
+    public List<Event> adminEventSearch(List<Long> users,
+                                        List<EventState> states,
+                                        List<Long> categories,
+                                        LocalDateTime rangeStart,
+                                        LocalDateTime rangeEnd,
+                                        long from,
+                                        int size) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = cb.createQuery(Event.class);
         Root<Event> event = query.from(Event.class);
@@ -58,6 +58,31 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 
         Predicate idFrom = cb.greaterThanOrEqualTo(event.get("id"), from);
         criteria = cb.and(criteria, idFrom);
+        query.select(event).where(criteria);
+        return entityManager.createQuery(query).setMaxResults(size).getResultList();
+    }
+
+    @Override
+    public List<Event> publicEventSearch(String text,
+                                         List<Long> categories,
+                                         Boolean paid,
+                                         LocalDateTime rangeStart,
+                                         LocalDateTime rangeEnd,
+                                         long from,
+                                         int size) {
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Event> query = cb.createQuery(Event.class);
+        Root<Event> event = query.from(Event.class);
+        Predicate criteria = cb.conjunction();
+
+        if (!text.isEmpty()) {
+            Predicate hasTextInAnnotation = cb.like(cb.lower(event.get("annotation")), "%"+text.toLowerCase()+"%");
+            Predicate hasTextInDescription = cb.like(cb.lower(event.get("description")), "%"+text.toLowerCase()+"%");
+            Predicate hasText = cb.or(hasTextInDescription, hasTextInAnnotation);
+            criteria = cb.and(criteria, hasText);
+        }
+
         query.select(event).where(criteria);
         return entityManager.createQuery(query).setMaxResults(size).getResultList();
     }

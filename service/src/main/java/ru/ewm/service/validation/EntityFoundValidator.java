@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class EntityFoundValidation {
+public class EntityFoundValidator {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
