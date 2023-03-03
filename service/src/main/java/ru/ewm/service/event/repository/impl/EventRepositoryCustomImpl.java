@@ -77,8 +77,8 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         Predicate criteria = cb.conjunction();
 
         if (text != null && !text.isEmpty()) {
-            Predicate hasTextInAnnotation = cb.like(cb.lower(event.get("annotation")), "%"+text.toLowerCase()+"%");
-            Predicate hasTextInDescription = cb.like(cb.lower(event.get("description")), "%"+text.toLowerCase()+"%");
+            Predicate hasTextInAnnotation = cb.like(cb.lower(event.get("annotation")), "%" + text.toLowerCase() + "%");
+            Predicate hasTextInDescription = cb.like(cb.lower(event.get("description")), "%" + text.toLowerCase() + "%");
             Predicate hasText = cb.or(hasTextInDescription, hasTextInAnnotation);
             criteria = cb.and(criteria, hasText);
         }

@@ -36,8 +36,8 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         User requester = entityFoundValidator.checkIfUserExist(userId);
         Event event = entityFoundValidator.checkIfEventExist(eventId);
 
-        Optional<ParticipationRequest> optionalRequest = requestRepository.
-                findFirstByEventIdIsAndRequesterIdIs(event.getId(), requester.getId());
+        Optional<ParticipationRequest> optionalRequest = requestRepository
+                .findFirstByEventIdIsAndRequesterIdIs(event.getId(), requester.getId());
 
         if (optionalRequest.isPresent()) {
             throw new ForbiddenException("participation request for this event is already exist");

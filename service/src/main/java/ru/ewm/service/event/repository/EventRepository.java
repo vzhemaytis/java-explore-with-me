@@ -7,5 +7,5 @@ import ru.ewm.service.event.model.Event;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long>, EventRepositoryCustom {
-    List<Event> findAllByIdIsGreaterThanEqualAndInitiatorIdIs(Long id, Long InitiatorId, Pageable pageable);
+    List<Event> findAllByIdIsGreaterThanEqualAndInitiatorIdIs(Long id, Long initiatorId, Pageable pageable);
 }

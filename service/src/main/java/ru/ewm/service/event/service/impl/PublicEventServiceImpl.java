@@ -37,7 +37,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Override
     public EventFullDto getEvent(Long id, HttpServletRequest request) {
         Event eventToReturn = entityFoundValidator.checkIfEventExist(id);
-        if(!eventToReturn.getState().equals(State.PUBLISHED)) {
+        if (!eventToReturn.getState().equals(State.PUBLISHED)) {
             throw new EntityNotFoundException(id, Event.class.getSimpleName());
         }
         String uri = request.getRequestURI();
