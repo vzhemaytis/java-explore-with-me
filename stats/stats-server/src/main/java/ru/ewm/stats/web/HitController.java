@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HitController {
     private final HitService hitService;
-    private final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
     @PostMapping("/hit")
