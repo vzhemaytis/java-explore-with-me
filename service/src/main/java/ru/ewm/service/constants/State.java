@@ -1,5 +1,5 @@
 package ru.ewm.service.constants;
 
-public enum EventState {
+public enum State {
     PENDING, PUBLISHED, CANCELED
 }

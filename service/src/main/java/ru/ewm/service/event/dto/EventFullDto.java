@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.ewm.service.category.dto.CategoryDto;
-import ru.ewm.service.constants.EventState;
+import ru.ewm.service.constants.State;
 import ru.ewm.service.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
@@ -37,7 +37,7 @@ public class EventFullDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime publishedOn;
     private boolean requestModeration;
-    private EventState state;
+    private State state;
     private String title;
     private Long views;
 

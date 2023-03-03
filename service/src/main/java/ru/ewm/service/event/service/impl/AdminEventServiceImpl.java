@@ -3,7 +3,7 @@ package ru.ewm.service.event.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ewm.service.constants.EventState;
+import ru.ewm.service.constants.State;
 import ru.ewm.service.error.ForbiddenException;
 import ru.ewm.service.event.dto.EventFullDto;
 import ru.ewm.service.event.dto.UpdateEventRequest;
@@ -32,7 +32,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Transactional
     @Override
     public List<EventFullDto> adminEventSearch(List<Long> users,
-                                               List<EventState> states,
+                                               List<State> states,
                                                List<Long> categories,
                                                LocalDateTime rangeStart,
                                                LocalDateTime rangeEnd,
@@ -41,12 +41,13 @@ public class AdminEventServiceImpl implements AdminEventService {
         List<Event> foundEvents = eventRepository.adminEventSearch(
                 users, states, categories, rangeStart, rangeEnd, from, size);
 
-        Map<Long, Long> views = commonEventService.getStats(foundEvents, false);
-
         List<EventFullDto> eventFullDtos = foundEvents.stream()
                 .map(EventMapper::toEventFullDto).collect(Collectors.toList());
-        eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
 
+        Map<Long, Long> views = commonEventService.getStats(foundEvents, false);
+        if (!views.isEmpty()) {
+            eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
+        }
         return eventFullDtos;
     }
 
@@ -57,7 +58,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         if (eventToUpdate.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
             throw new ForbiddenException("Event date should not earlier then in 1 hours from now");
         }
-        if (!eventToUpdate.getState().equals(EventState.PENDING)) {
+        if (!eventToUpdate.getState().equals(State.PENDING)) {
             throw new ForbiddenException(
                     String.format("Cannot publish the event because it's not in the right state: %s",
                             eventToUpdate.getState().name()));
@@ -66,10 +67,10 @@ public class AdminEventServiceImpl implements AdminEventService {
         switch (updateEventAdminRequest.getStateAction()) {
             case PUBLISH_EVENT:
                 updatedEvent.setPublishedOn(LocalDateTime.now());
-                updatedEvent.setState(EventState.PUBLISHED);
+                updatedEvent.setState(State.PUBLISHED);
                 break;
             case REJECT_EVENT:
-                updatedEvent.setState(EventState.CANCELED);
+                updatedEvent.setState(State.CANCELED);
                 break;
         }
         return toEventFullDto(eventRepository.save(updatedEvent));

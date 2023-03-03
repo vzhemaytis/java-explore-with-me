@@ -1,6 +1,6 @@
 package ru.ewm.service.event.repository;
 
-import ru.ewm.service.constants.EventState;
+import ru.ewm.service.constants.State;
 import ru.ewm.service.event.model.Event;
 
 import java.time.LocalDateTime;
@@ -9,7 +9,7 @@ import java.util.List;
 public interface EventRepositoryCustom {
 
     List<Event> adminEventSearch(List<Long> users,
-                                 List<EventState> states,
+                                 List<State> states,
                                  List<Long> categories,
                                  LocalDateTime rangeStart,
                                  LocalDateTime rangeEnd,

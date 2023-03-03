@@ -3,7 +3,7 @@ package ru.ewm.service.event.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ewm.service.constants.EventState;
+import ru.ewm.service.constants.State;
 import ru.ewm.service.constants.SortTypes;
 import ru.ewm.service.error.EntityNotFoundException;
 import ru.ewm.service.event.dto.EventFullDto;
@@ -37,7 +37,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Override
     public EventFullDto getEvent(Long id, HttpServletRequest request) {
         Event eventToReturn = entityFoundValidator.checkIfEventExist(id);
-        if(!eventToReturn.getState().equals(EventState.PUBLISHED)) {
+        if(!eventToReturn.getState().equals(State.PUBLISHED)) {
             throw new EntityNotFoundException(id, Event.class.getSimpleName());
         }
         String uri = request.getRequestURI();
@@ -76,7 +76,11 @@ public class PublicEventServiceImpl implements PublicEventService {
 
         LocalDateTime timestamp = LocalDateTime.now();
         found.forEach(event -> hitsClient.saveNewHit(APP_NAME, "/events/" + event.getId(), ip, timestamp));
-
-        return eventFullDtos;
+        if (sort.equals(SortTypes.VIEWS)) {
+            return eventFullDtos.stream()
+                    .sorted(Comparator.comparing(EventFullDto::getViews)).collect(Collectors.toList());
+        }
+        return eventFullDtos.stream()
+                .sorted(Comparator.comparing(EventFullDto::getEventDate)).collect(Collectors.toList());
     }
 }

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.ewm.service.category.model.Category;
-import ru.ewm.service.constants.EventState;
+import ru.ewm.service.constants.State;
 import ru.ewm.service.error.ForbiddenException;
 import ru.ewm.service.event.dto.UpdateEventRequest;
 import ru.ewm.service.event.model.Event;
@@ -29,7 +29,7 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
 
     @Override
     public Event updateEvent(Event eventToUpdate, UpdateEventRequest updateEventRequest) {
-        if (eventToUpdate.getState().equals(EventState.PUBLISHED)) {
+        if (eventToUpdate.getState().equals(State.PUBLISHED)) {
             throw new ForbiddenException("Only pending or canceled events can be changed");
         }
         if (updateEventRequest.getAnnotation() != null) {
@@ -68,6 +68,9 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
                                     Boolean unique) {
 
         Optional<LocalDateTime> start = events.stream().map(Event::getPublishedOn).min(LocalDateTime::compareTo);
+        if (start.isEmpty()) {
+            return new HashMap<>();
+        }
         LocalDateTime timestamp = LocalDateTime.now();
         List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
 
@@ -88,7 +91,7 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
         for (Long id : ids) {
             Long eventViews = 0L;
             Optional<Long> viewsOptional = stats.stream()
-                    .filter(l -> l.getUri().equals("/events/" + id)).map(ViewStatsDto::getHits).findFirst();
+                    .filter(s -> s.getUri().equals("/events/" + id)).map(ViewStatsDto::getHits).findFirst();
             if (viewsOptional.isPresent()) {
                 eventViews = viewsOptional.get();
             }

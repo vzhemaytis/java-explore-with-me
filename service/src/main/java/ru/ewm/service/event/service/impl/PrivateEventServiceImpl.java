@@ -5,7 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ewm.service.category.model.Category;
-import ru.ewm.service.constants.EventState;
+import ru.ewm.service.constants.State;
 import ru.ewm.service.error.EntityNotFoundException;
 import ru.ewm.service.error.ForbiddenException;
 import ru.ewm.service.event.dto.EventFullDto;
@@ -43,7 +43,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         eventToSave.setCategory(category);
         User initiator = entityFoundValidator.checkIfUserExist(userId);
         eventToSave.setInitiator(initiator);
-        eventToSave.setState(EventState.PENDING);
+        eventToSave.setState(State.PENDING);
         eventToSave.setCreatedOn(LocalDateTime.now());
         return toEventFullDto(eventRepository.save(eventToSave));
     }
@@ -55,11 +55,13 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         List<Event> foundEvents = eventRepository
                 .findAllByIdIsGreaterThanEqualAndInitiatorIdIs(from, userId, pageRequest);
 
-        Map<Long, Long> views = commonEventService.getStats(foundEvents, false);
-
         List<EventFullDto> eventFullDtos = foundEvents.stream()
                 .map(EventMapper::toEventFullDto).collect(Collectors.toList());
-        eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
+
+        Map<Long, Long> views = commonEventService.getStats(foundEvents, false);
+        if (!views.isEmpty()) {
+            eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
+        }
 
         return eventFullDtos;
     }
@@ -72,7 +74,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             throw new EntityNotFoundException(eventId, Event.class.getSimpleName());
         }
         EventFullDto eventFullDto = toEventFullDto(eventToReturn);
-        if (eventFullDto.getState().equals(EventState.PUBLISHED)) {
+        if (eventFullDto.getState().equals(State.PUBLISHED)) {
             Map<Long, Long> views = commonEventService.getStats(List.of(eventToReturn), false);
             eventFullDto.setViews(views.get(eventToReturn.getId()));
         }

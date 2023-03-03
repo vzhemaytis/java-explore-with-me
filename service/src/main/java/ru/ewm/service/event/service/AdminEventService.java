@@ -1,6 +1,6 @@
 package ru.ewm.service.event.service;
 
-import ru.ewm.service.constants.EventState;
+import ru.ewm.service.constants.State;
 import ru.ewm.service.event.dto.EventFullDto;
 import ru.ewm.service.event.dto.UpdateEventRequest;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface AdminEventService {
     List<EventFullDto> adminEventSearch(List<Long> users,
-                                        List<EventState> states,
+                                        List<State> states,
                                         List<Long> categories,
                                         LocalDateTime rangeStart,
                                         LocalDateTime rangeEnd,

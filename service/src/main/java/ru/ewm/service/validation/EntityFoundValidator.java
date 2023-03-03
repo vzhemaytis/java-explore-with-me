@@ -7,6 +7,8 @@ import ru.ewm.service.category.repository.CategoryRepository;
 import ru.ewm.service.error.EntityNotFoundException;
 import ru.ewm.service.event.model.Event;
 import ru.ewm.service.event.repository.EventRepository;
+import ru.ewm.service.participation.model.ParticipationRequest;
+import ru.ewm.service.participation.repository.RequestRepository;
 import ru.ewm.service.user.model.User;
 import ru.ewm.service.user.repository.UserRepository;
 
@@ -18,6 +20,7 @@ public class EntityFoundValidator {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
+    private final RequestRepository requestRepository;
 
     public User checkIfUserExist(Long userId) {
         Optional<User> user = userRepository.findById(userId);
@@ -41,5 +44,13 @@ public class EntityFoundValidator {
             throw new EntityNotFoundException(catId, Category.class.getSimpleName());
         }
         return category.get();
+    }
+
+    public ParticipationRequest checkIfRequestExist(Long requestId) {
+        Optional<ParticipationRequest> request = requestRepository.findById(requestId);
+        if (request.isEmpty()) {
+            throw new EntityNotFoundException(requestId, ParticipationRequest.class.getSimpleName());
+        }
+        return request.get();
     }
 }

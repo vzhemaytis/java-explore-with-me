@@ -1,6 +1,6 @@
 package ru.ewm.service.event.repository.impl;
 
-import ru.ewm.service.constants.EventState;
+import ru.ewm.service.constants.State;
 import ru.ewm.service.event.model.Event;
 import ru.ewm.service.event.repository.EventRepositoryCustom;
 
@@ -20,7 +20,7 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 
     @Override
     public List<Event> adminEventSearch(List<Long> users,
-                                        List<EventState> states,
+                                        List<State> states,
                                         List<Long> categories,
                                         LocalDateTime rangeStart,
                                         LocalDateTime rangeEnd,
@@ -109,7 +109,7 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         Predicate idFrom = cb.greaterThanOrEqualTo(event.get("id"), from);
         criteria = cb.and(criteria, idFrom);
 
-        Predicate isPublished = cb.equal(event.get("state"), EventState.PUBLISHED);
+        Predicate isPublished = cb.equal(event.get("state"), State.PUBLISHED);
         criteria = cb.and(criteria, isPublished);
 
         query.select(event).where(criteria);
