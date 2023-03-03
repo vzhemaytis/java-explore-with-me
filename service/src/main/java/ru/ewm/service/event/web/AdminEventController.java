@@ -2,6 +2,7 @@ package ru.ewm.service.event.web;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +18,8 @@ import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.ewm.service.constants.Constants.DATE_TIME_PATTERN;
+
 @RestController
 @RequestMapping(path = "/admin/events")
 @Slf4j
@@ -31,8 +34,10 @@ public class AdminEventController {
             @RequestParam(name = "users", required = false) List<Long> users,
             @RequestParam(name = "states", required = false) List<EventState> states,
             @RequestParam(name = "categories", required = false) List<Long> categories,
-            @RequestParam(name = "rangeStart", required = false) LocalDateTime rangeStart,
-            @RequestParam(name = "rangeEnd", required = false) LocalDateTime rangeEnd,
+            @RequestParam(name = "rangeStart", required = false)
+            @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime rangeStart,
+            @RequestParam(name = "rangeEnd", required = false)
+            @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime rangeEnd,
             @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero long from,
             @RequestParam(name = "size", defaultValue = "10") @Positive int size
     ) {

@@ -40,6 +40,7 @@ public class Event {
     private int participantLimit;
     private LocalDateTime publishedOn;
     private boolean requestModeration;
+    @Enumerated(EnumType.STRING)
     private EventState state;
     private String title;
 

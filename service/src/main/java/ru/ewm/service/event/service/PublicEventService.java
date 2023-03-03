@@ -18,5 +18,6 @@ public interface PublicEventService {
                                          Boolean onlyAvailable,
                                          SortTypes sort,
                                          long from,
-                                         int size);
+                                         int size,
+                                         String ip);
 }

@@ -21,6 +21,7 @@ import ru.ewm.service.validation.EntityFoundValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -53,17 +54,29 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         PageRequest pageRequest = PageRequest.of(0, size);
         List<Event> foundEvents = eventRepository
                 .findAllByIdIsGreaterThanEqualAndInitiatorIdIs(from, userId, pageRequest);
-        return foundEvents.stream().map(EventMapper::toEventFullDto).collect(Collectors.toList());
+
+        Map<Long, Long> views = commonEventService.getStats(foundEvents, false);
+
+        List<EventFullDto> eventFullDtos = foundEvents.stream()
+                .map(EventMapper::toEventFullDto).collect(Collectors.toList());
+        eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
+
+        return eventFullDtos;
     }
 
     @Transactional
     @Override
     public EventFullDto getUserEvent(Long userId, Long eventId) {
-        Event event = entityFoundValidator.checkIfEventExist(eventId);
-        if (!Objects.equals(event.getInitiator().getId(), userId)) {
+        Event eventToReturn = entityFoundValidator.checkIfEventExist(eventId);
+        if (!Objects.equals(eventToReturn.getInitiator().getId(), userId)) {
             throw new EntityNotFoundException(eventId, Event.class.getSimpleName());
         }
-        return toEventFullDto(event);
+        EventFullDto eventFullDto = toEventFullDto(eventToReturn);
+        if (eventFullDto.getState().equals(EventState.PUBLISHED)) {
+            Map<Long, Long> views = commonEventService.getStats(List.of(eventToReturn), false);
+            eventFullDto.setViews(views.get(eventToReturn.getId()));
+        }
+        return eventFullDto;
     }
 
     @Transactional

@@ -76,12 +76,41 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         Root<Event> event = query.from(Event.class);
         Predicate criteria = cb.conjunction();
 
-        if (!text.isEmpty()) {
+        if (text != null && !text.isEmpty()) {
             Predicate hasTextInAnnotation = cb.like(cb.lower(event.get("annotation")), "%"+text.toLowerCase()+"%");
             Predicate hasTextInDescription = cb.like(cb.lower(event.get("description")), "%"+text.toLowerCase()+"%");
             Predicate hasText = cb.or(hasTextInDescription, hasTextInAnnotation);
             criteria = cb.and(criteria, hasText);
         }
+
+        if (paid != null) {
+            Predicate isPaid = cb.equal(event.get("paid"), paid);
+            criteria = cb.and(criteria, isPaid);
+        }
+
+        if (categories != null) {
+            Predicate inCategories = event.get("category").in(categories);
+            criteria = cb.and(criteria, inCategories);
+        }
+
+        if (rangeStart != null) {
+            Predicate start = cb.greaterThan(event.get("eventDate"), rangeStart);
+            criteria = cb.and(criteria, start);
+        } else {
+            Predicate start = cb.greaterThan(event.get("eventDate"), LocalDateTime.now());
+            criteria = cb.and(criteria, start);
+        }
+
+        if (rangeEnd != null) {
+            Predicate end = cb.lessThan(event.get("eventDate"), rangeEnd);
+            criteria = cb.and(criteria, end);
+        }
+
+        Predicate idFrom = cb.greaterThanOrEqualTo(event.get("id"), from);
+        criteria = cb.and(criteria, idFrom);
+
+        Predicate isPublished = cb.equal(event.get("state"), EventState.PUBLISHED);
+        criteria = cb.and(criteria, isPublished);
 
         query.select(event).where(criteria);
         return entityManager.createQuery(query).setMaxResults(size).getResultList();

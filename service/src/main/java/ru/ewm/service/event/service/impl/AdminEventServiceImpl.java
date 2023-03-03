@@ -16,6 +16,7 @@ import ru.ewm.service.validation.EntityFoundValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static ru.ewm.service.event.mapper.EventMapper.toEventFullDto;
@@ -39,7 +40,14 @@ public class AdminEventServiceImpl implements AdminEventService {
                                                int size) {
         List<Event> foundEvents = eventRepository.adminEventSearch(
                 users, states, categories, rangeStart, rangeEnd, from, size);
-        return foundEvents.stream().map(EventMapper::toEventFullDto).collect(Collectors.toList());
+
+        Map<Long, Long> views = commonEventService.getStats(foundEvents, false);
+
+        List<EventFullDto> eventFullDtos = foundEvents.stream()
+                .map(EventMapper::toEventFullDto).collect(Collectors.toList());
+        eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
+
+        return eventFullDtos;
     }
 
     @Transactional

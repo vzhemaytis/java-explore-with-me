@@ -1,6 +1,9 @@
 package ru.ewm.service.event.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dto.ViewStatsDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.ewm.service.category.model.Category;
 import ru.ewm.service.constants.EventState;
@@ -8,14 +11,21 @@ import ru.ewm.service.error.ForbiddenException;
 import ru.ewm.service.event.dto.UpdateEventRequest;
 import ru.ewm.service.event.model.Event;
 import ru.ewm.service.validation.EntityFoundValidator;
+import ru.ewm.stats.client.web.HitsClient;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static ru.ewm.service.constants.Constants.DATE_TIME_FORMATTER;
 
 @Service
 @RequiredArgsConstructor
 public class CommonEventServiceImpl implements ru.ewm.service.event.service.CommonEventService {
 
     private final EntityFoundValidator entityFoundValidator;
+    private final HitsClient hitsClient;
 
     @Override
     public Event updateEvent(Event eventToUpdate, UpdateEventRequest updateEventRequest) {
@@ -51,5 +61,40 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
             eventToUpdate.setTitle(updateEventRequest.getTitle());
         }
         return eventToUpdate;
+    }
+
+    @Override
+    public Map<Long, Long> getStats(List<Event> events,
+                                    Boolean unique) {
+
+        Optional<LocalDateTime> start = events.stream().map(Event::getPublishedOn).min(LocalDateTime::compareTo);
+        LocalDateTime timestamp = LocalDateTime.now();
+        List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
+
+        Map<Long, Long> views = new HashMap<>();
+        String startTime = start.get().format(DATE_TIME_FORMATTER);
+        String endTime = timestamp.format(DATE_TIME_FORMATTER);
+        List<String> uris = ids.stream().map(id -> "/events/" + id).collect(Collectors.toList());
+
+        ResponseEntity<Object> response = hitsClient.getViewStats(startTime, endTime, uris, unique);
+        List<ViewStatsDto> stats;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            stats = Arrays.asList(mapper.readValue(mapper.writeValueAsString(response.getBody()), ViewStatsDto[].class));
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+        for (Long id : ids) {
+            Long eventViews = 0L;
+            Optional<Long> viewsOptional = stats.stream()
+                    .filter(l -> l.getUri().equals("/events/" + id)).map(ViewStatsDto::getHits).findFirst();
+            if (viewsOptional.isPresent()) {
+                eventViews = viewsOptional.get();
+            }
+            views.put(id, eventViews);
+        }
+
+        return views;
     }
 }
