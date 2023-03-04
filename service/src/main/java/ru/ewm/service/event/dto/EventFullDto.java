@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.ewm.service.category.dto.CategoryDto;
 import ru.ewm.service.constants.State;
+import ru.ewm.service.event.model.Location;
 import ru.ewm.service.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
@@ -29,9 +30,7 @@ public class EventFullDto {
     private LocalDateTime eventDate;
     private Long id;
     private UserShortDto initiator;
-
-    //TODO add location
-
+    private Location location;
     private Boolean paid;
     private int participantLimit;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)

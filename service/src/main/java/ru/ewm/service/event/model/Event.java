@@ -33,9 +33,8 @@ public class Event {
     @ManyToOne(optional = false)
     @JoinColumn(name = "initiator_id")
     private User initiator;
-
-    //TODO add location
-
+    @Embedded
+    private Location location;
     private Boolean paid;
     private int participantLimit;
     private LocalDateTime publishedOn;

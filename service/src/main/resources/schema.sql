@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS events
     description        VARCHAR(7000)                           NOT NULL,
     event_date         TIMESTAMP WITHOUT TIME ZONE             NOT NULL,
     initiator_id       BIGINT                                  NOT NULL,
+    lat                FLOAT                                   NOT NULL,
+    lon                FLOAT                                   NOT NULL,
     paid               BOOLEAN                                 NOT NULL,
     participant_limit  BIGINT                                  NOT NULL,
     published_on       TIMESTAMP WITHOUT TIME ZONE,
@@ -41,7 +43,7 @@ CREATE TABLE IF NOT EXISTS participation_requests
     created      TIMESTAMP WITHOUT TIME ZONE             NOT NULL,
     event_id     BIGINT                                  NOT NULL,
     requester_id BIGINT                                  NOT NULL,
-    status        VARCHAR(20)                             NOT NULL,
+    status       VARCHAR(20)                             NOT NULL,
     CONSTRAINT pk_participation_requests
         PRIMARY KEY (id),
     CONSTRAINT fk_participation_requests_events

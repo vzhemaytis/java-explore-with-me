@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.ewm.service.constants.StateAction;
+import ru.ewm.service.event.model.Location;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -25,9 +26,7 @@ public abstract class UpdateEventRequest {
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     private LocalDateTime eventDate;
-
-    //TODO create Location
-
+    private Location location;
     private Boolean paid;
     private Integer participantLimit;
     private Boolean requestModeration;

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
+import ru.ewm.service.event.model.Location;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -29,9 +30,8 @@ public class NewEventDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
     @Future(message = "должно содержать дату, которая еще не наступила")
     private LocalDateTime eventDate;
-
-    //TODO create Location
-
+    @NotNull(message = "must not be null")
+    private Location location;
     private boolean paid;
     private int participantLimit;
     @Value("true")

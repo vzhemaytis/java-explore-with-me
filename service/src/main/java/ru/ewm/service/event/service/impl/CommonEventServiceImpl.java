@@ -48,6 +48,9 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
             }
             eventToUpdate.setEventDate(updateEventRequest.getEventDate());
         }
+        if (updateEventRequest.getLocation() != null) {
+            eventToUpdate.setLocation(updateEventRequest.getLocation());
+        }
         if (updateEventRequest.getPaid() != null) {
             eventToUpdate.setPaid(updateEventRequest.getPaid());
         }
