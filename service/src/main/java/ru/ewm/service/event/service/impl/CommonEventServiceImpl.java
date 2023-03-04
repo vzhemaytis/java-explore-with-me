@@ -74,7 +74,6 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
         LocalDateTime timestamp = LocalDateTime.now();
         List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
 
-        Map<Long, Long> views = new HashMap<>();
         String startTime = start.get().format(DATE_TIME_FORMATTER);
         String endTime = timestamp.format(DATE_TIME_FORMATTER);
         List<String> uris = ids.stream().map(id -> "/events/" + id).collect(Collectors.toList());
@@ -88,6 +87,7 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
             throw new RuntimeException(e.getMessage());
         }
 
+        Map<Long, Long> views = new HashMap<>();
         for (Long id : ids) {
             Long eventViews = 0L;
             Optional<Long> viewsOptional = stats.stream()
@@ -100,4 +100,6 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
 
         return views;
     }
+
+
 }

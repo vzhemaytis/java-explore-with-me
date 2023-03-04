@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.ewm.service.constants.State;
 import ru.ewm.service.error.ForbiddenException;
 import ru.ewm.service.event.model.Event;
+import ru.ewm.service.participation.dto.EventRequestStatusUpdateRequest;
 import ru.ewm.service.participation.dto.ParticipationRequestDto;
 import ru.ewm.service.participation.mapper.RequestMapper;
 import ru.ewm.service.participation.model.ParticipationRequest;
@@ -52,7 +53,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         }
 
         List<ParticipationRequest> confirmedRequests = commonRequestService
-                .findConfirmedRequests(List.of(event.getId()));
+                .findConfirmedRequests(List.of(event));
         if (confirmedRequests.size() == event.getParticipantLimit()) {
             throw new ForbiddenException("participation limit is reached");
         }
@@ -62,7 +63,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         participationRequest.setEvent(event);
         participationRequest.setRequester(requester);
 
-        if (!event.isRequestModeration()) {
+        if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
             participationRequest.setStatus(State.PUBLISHED);
         } else {
             participationRequest.setStatus(State.PENDING);
@@ -100,5 +101,56 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         }
         List<ParticipationRequest> foundRequests = requestRepository.findAllByEventIdIs(eventId);
         return foundRequests.stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public List<ParticipationRequestDto> updateRequests(Long userId,
+                                                        Long eventId,
+                                                        EventRequestStatusUpdateRequest request) {
+        User initiator = entityFoundValidator.checkIfUserExist(userId);
+        Event event = entityFoundValidator.checkIfEventExist(eventId);
+        if (!event.getInitiator().equals(initiator)) {
+            throw new ForbiddenException("user is not event initiator");
+        }
+
+        if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
+            throw new ForbiddenException("requests for this event don't need confirmation");
+        }
+
+        int confirmedRequests = commonRequestService.findConfirmedRequests(List.of(event)).size();
+
+        List<ParticipationRequest> requestsToUpdate = requestRepository.findAllByIdIn(request.getRequestIds());
+        switch (request.getStatus()) {
+            case REJECTED:
+                for (ParticipationRequest r : requestsToUpdate) {
+
+                    if (!r.getStatus().equals(State.PENDING)) {
+                        throw new ForbiddenException("Request must have status PENDING");
+                    }
+
+                    r.setStatus(State.CANCELED);
+                }
+                break;
+            case CONFIRMED:
+                for (ParticipationRequest r : requestsToUpdate) {
+
+                    if (!r.getStatus().equals(State.PENDING)) {
+                        throw new ForbiddenException("Request must have status PENDING");
+                    }
+
+                    if (confirmedRequests == event.getParticipantLimit()) {
+                        throw new ForbiddenException("The participant limit has been reached");
+                    }
+
+                    r.setStatus(State.PUBLISHED);
+                    confirmedRequests++;
+                }
+                break;
+        }
+
+
+        return requestRepository.saveAll(requestsToUpdate)
+                .stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
     }
 }

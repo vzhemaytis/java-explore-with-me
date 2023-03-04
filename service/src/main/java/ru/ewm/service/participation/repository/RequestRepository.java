@@ -2,6 +2,7 @@ package ru.ewm.service.participation.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.ewm.service.constants.State;
+import ru.ewm.service.event.model.Event;
 import ru.ewm.service.participation.model.ParticipationRequest;
 
 import java.util.List;
@@ -14,5 +15,7 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
 
     List<ParticipationRequest> findAllByEventIdIs(Long eventId);
 
-    List<ParticipationRequest> findAllByEventIdInAndStatusIs(List<Long> eventIds, State status);
+    List<ParticipationRequest> findAllByEventInAndStatusIs(List<Event> event, State status);
+
+    List<ParticipationRequest> findAllByIdIn(List<Long> ids);
 }

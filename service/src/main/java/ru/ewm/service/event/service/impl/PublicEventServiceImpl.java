@@ -12,6 +12,8 @@ import ru.ewm.service.event.model.Event;
 import ru.ewm.service.event.repository.EventRepository;
 import ru.ewm.service.event.service.CommonEventService;
 import ru.ewm.service.event.service.PublicEventService;
+import ru.ewm.service.participation.model.ParticipationRequest;
+import ru.ewm.service.participation.service.CommonRequestService;
 import ru.ewm.service.validation.EntityFoundValidator;
 import ru.ewm.stats.client.web.HitsClient;
 
@@ -32,6 +34,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     private final HitsClient hitsClient;
     private final EntityFoundValidator entityFoundValidator;
     private final CommonEventService commonEventService;
+    private final CommonRequestService commonRequestService;
 
     @Transactional
     @Override
@@ -40,13 +43,18 @@ public class PublicEventServiceImpl implements PublicEventService {
         if (!eventToReturn.getState().equals(State.PUBLISHED)) {
             throw new EntityNotFoundException(id, Event.class.getSimpleName());
         }
-        String uri = request.getRequestURI();
-        String ip = request.getRemoteAddr();
-
-        Map<Long, Long> views = commonEventService.getStats(List.of(eventToReturn), false);
 
         EventFullDto eventFullDto = toEventFullDto(eventToReturn);
+
+        Map<Long, Long> views = commonEventService.getStats(List.of(eventToReturn), false);
         eventFullDto.setViews(views.get(eventToReturn.getId()));
+
+        List<ParticipationRequest> confirmedRequests = commonRequestService
+                .findConfirmedRequests(List.of(eventToReturn));
+        eventFullDto.setConfirmedRequests(confirmedRequests.size());
+
+        String uri = request.getRequestURI();
+        String ip = request.getRemoteAddr();
         hitsClient.saveNewHit(APP_NAME, uri, ip, LocalDateTime.now());
         return eventFullDto;
     }
@@ -64,19 +72,28 @@ public class PublicEventServiceImpl implements PublicEventService {
                                                 int size,
                                                 String ip) {
 
-        List<Event> found = eventRepository.publicEventSearch(text, categories, paid, rangeStart, rangeEnd, from, size);
-        if (found.isEmpty()) {
+        List<Event> foundEvents = eventRepository.publicEventSearch(text, categories, paid, rangeStart, rangeEnd, from, size);
+        if (foundEvents.isEmpty()) {
             return List.of();
         }
 
-        Map<Long, Long> views = commonEventService.getStats(found, false);
+        List<EventFullDto> eventFullDtos = foundEvents.stream().
+                map(EventMapper::toEventFullDto).collect(Collectors.toList());
 
-        List<EventFullDto> eventFullDtos = found.stream().map(EventMapper::toEventFullDto).collect(Collectors.toList());
+        Map<Long, Long> views = commonEventService.getStats(foundEvents, false);
         eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
 
+        List<ParticipationRequest> confirmedRequests = commonRequestService.findConfirmedRequests(foundEvents);
+        for (EventFullDto fullDto : eventFullDtos) {
+            fullDto.setConfirmedRequests((int) confirmedRequests.stream()
+                    .filter(request -> request.getEvent().getId().equals(fullDto.getId()))
+                    .count());
+        }
+
         LocalDateTime timestamp = LocalDateTime.now();
-        found.forEach(event -> hitsClient.saveNewHit(APP_NAME, "/events/" + event.getId(), ip, timestamp));
-        if (sort.equals(SortTypes.VIEWS)) {
+        foundEvents.forEach(event -> hitsClient.saveNewHit(APP_NAME, "/events/" + event.getId(), ip, timestamp));
+
+        if (sort != null && sort.equals(SortTypes.VIEWS)) {
             return eventFullDtos.stream()
                     .sorted(Comparator.comparing(EventFullDto::getViews)).collect(Collectors.toList());
         }

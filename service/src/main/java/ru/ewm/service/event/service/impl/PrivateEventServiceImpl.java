@@ -16,6 +16,8 @@ import ru.ewm.service.event.model.Event;
 import ru.ewm.service.event.repository.EventRepository;
 import ru.ewm.service.event.service.CommonEventService;
 import ru.ewm.service.event.service.PrivateEventService;
+import ru.ewm.service.participation.model.ParticipationRequest;
+import ru.ewm.service.participation.service.CommonRequestService;
 import ru.ewm.service.user.model.User;
 import ru.ewm.service.validation.EntityFoundValidator;
 
@@ -34,6 +36,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final EventRepository eventRepository;
     private final EntityFoundValidator entityFoundValidator;
     private final CommonEventService commonEventService;
+    private final CommonRequestService commonRequestService;
 
     @Transactional
     @Override
@@ -63,6 +66,13 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
         }
 
+        List<ParticipationRequest> confirmedRequests = commonRequestService.findConfirmedRequests(foundEvents);
+        for (EventFullDto fullDto : eventFullDtos) {
+            fullDto.setConfirmedRequests((int) confirmedRequests.stream()
+                    .filter(request -> request.getEvent().getId().equals(fullDto.getId()))
+                    .count());
+        }
+
         return eventFullDtos;
     }
 
@@ -77,6 +87,10 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         if (eventFullDto.getState().equals(State.PUBLISHED)) {
             Map<Long, Long> views = commonEventService.getStats(List.of(eventToReturn), false);
             eventFullDto.setViews(views.get(eventToReturn.getId()));
+
+            List<ParticipationRequest> confirmedRequests = commonRequestService
+                    .findConfirmedRequests(List.of(eventToReturn));
+            eventFullDto.setConfirmedRequests(confirmedRequests.size());
         }
         return eventFullDto;
     }
