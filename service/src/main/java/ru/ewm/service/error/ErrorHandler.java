@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -87,6 +88,19 @@ public class ErrorHandler {
         ApiError apiError = new ApiError();
         apiError.setStatus(HttpStatus.FORBIDDEN.name());
         apiError.setReason("For the requested operation the conditions are not met.");
+        apiError.setMessage(message);
+        apiError.setTimestamp(LocalDateTime.now());
+        return apiError;
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
+        String message = e.getMessage();
+        log.warn(message);
+        ApiError apiError = new ApiError();
+        apiError.setStatus(HttpStatus.BAD_REQUEST.name());
+        apiError.setReason("Incorrectly made request.");
         apiError.setMessage(message);
         apiError.setTimestamp(LocalDateTime.now());
         return apiError;

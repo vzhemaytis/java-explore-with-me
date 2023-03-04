@@ -28,7 +28,6 @@ public class NewEventDto {
     @Size(min = 20, max = 7000, message = "must be more then 20 less then 7000")
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_TIME_PATTERN)
-    @Future(message = "должно содержать дату, которая еще не наступила")
     private LocalDateTime eventDate;
     @NotNull(message = "must not be null")
     private Location location;
