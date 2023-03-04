@@ -77,8 +77,8 @@ public class PublicEventServiceImpl implements PublicEventService {
             return List.of();
         }
 
-        List<EventFullDto> eventFullDtos = foundEvents.stream().
-                map(EventMapper::toEventFullDto).collect(Collectors.toList());
+        List<EventFullDto> eventFullDtos = foundEvents.stream()
+                .map(EventMapper::toEventFullDto).collect(Collectors.toList());
 
         Map<Long, Long> views = commonEventService.getStats(foundEvents, false);
         eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
