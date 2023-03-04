@@ -70,7 +70,9 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
     public Map<Long, Long> getStats(List<Event> events,
                                     Boolean unique) {
 
-        Optional<LocalDateTime> start = events.stream().map(Event::getPublishedOn).min(LocalDateTime::compareTo);
+        Optional<LocalDateTime> start = events.stream()
+                .map(Event::getPublishedOn)
+                .filter(Objects::nonNull).min(LocalDateTime::compareTo);
         if (start.isEmpty()) {
             return new HashMap<>();
         }

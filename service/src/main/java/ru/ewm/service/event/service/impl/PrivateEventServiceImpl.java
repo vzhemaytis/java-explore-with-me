@@ -41,6 +41,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Transactional
     @Override
     public EventFullDto addEvent(Long userId, NewEventDto newEventDto) {
+        if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new ForbiddenException("Event could not be earlier then in 2 hours");
+        }
         Event eventToSave = toEvent(newEventDto);
         Category category = entityFoundValidator.checkIfCategoryExist(newEventDto.getCategory());
         eventToSave.setCategory(category);
@@ -103,6 +106,14 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             throw new ForbiddenException("Event could be updated only by initiator");
         }
         Event updatedEvent = commonEventService.updateEvent(eventToUpdate, updateEventUserRequest);
+        switch (updateEventUserRequest.getStateAction()) {
+            case SEND_TO_REVIEW:
+                updatedEvent.setState(State.PENDING);
+                break;
+            case CANCEL_REVIEW:
+                updatedEvent.setState(State.CANCELED);
+                break;
+        }
         return toEventFullDto(eventRepository.save(updatedEvent));
     }
 }
