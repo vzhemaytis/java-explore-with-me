@@ -2,6 +2,7 @@ package ru.ewm.service.event.mapper;
 
 import ru.ewm.service.category.model.Category;
 import ru.ewm.service.event.dto.EventFullDto;
+import ru.ewm.service.event.dto.EventShortDto;
 import ru.ewm.service.event.dto.NewEventDto;
 import ru.ewm.service.event.model.Event;
 
@@ -45,5 +46,17 @@ public class EventMapper {
         eventFullDto.setTitle(event.getTitle());
         eventFullDto.setViews(0L);
         return eventFullDto;
+    }
+
+    public static EventShortDto toEventShortDto(Event event) {
+        EventShortDto eventShortDto = new EventShortDto();
+        eventShortDto.setAnnotation(event.getAnnotation());
+        eventShortDto.setCategory(toCategoryDto(event.getCategory()));
+        eventShortDto.setEventDate(event.getEventDate());
+        eventShortDto.setId(event.getId());
+        eventShortDto.setInitiator(toUserShortDto(event.getInitiator()));
+        eventShortDto.setPaid(event.getPaid());
+        eventShortDto.setTitle(event.getTitle());
+        return eventShortDto;
     }
 }

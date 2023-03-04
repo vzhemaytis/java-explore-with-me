@@ -38,7 +38,7 @@ public class EventFullDto {
     private boolean requestModeration;
     private State state;
     private String title;
-    private Long views;
+    private long views;
 
     @Override
     public String toString() {
