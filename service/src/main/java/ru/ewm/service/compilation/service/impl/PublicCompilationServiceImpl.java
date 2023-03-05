@@ -11,7 +11,6 @@ import ru.ewm.service.compilation.repository.CompilationRepository;
 import ru.ewm.service.compilation.service.PublicCompilationService;
 import ru.ewm.service.event.dto.EventShortDto;
 import ru.ewm.service.event.model.Event;
-import ru.ewm.service.event.repository.EventRepository;
 import ru.ewm.service.event.service.CommonEventService;
 import ru.ewm.service.participation.model.ParticipationRequest;
 import ru.ewm.service.participation.service.CommonRequestService;
