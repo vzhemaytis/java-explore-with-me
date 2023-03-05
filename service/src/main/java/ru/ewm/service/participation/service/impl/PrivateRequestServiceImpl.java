@@ -7,6 +7,7 @@ import ru.ewm.service.constants.State;
 import ru.ewm.service.error.ForbiddenException;
 import ru.ewm.service.event.model.Event;
 import ru.ewm.service.participation.dto.EventRequestStatusUpdateRequest;
+import ru.ewm.service.participation.dto.EventRequestStatusUpdateResult;
 import ru.ewm.service.participation.dto.ParticipationRequestDto;
 import ru.ewm.service.participation.mapper.RequestMapper;
 import ru.ewm.service.participation.model.ParticipationRequest;
@@ -105,7 +106,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
 
     @Transactional
     @Override
-    public List<ParticipationRequestDto> updateRequests(Long userId,
+    public EventRequestStatusUpdateResult updateRequests(Long userId,
                                                         Long eventId,
                                                         EventRequestStatusUpdateRequest request) {
         User initiator = entityFoundValidator.checkIfUserExist(userId);
@@ -121,6 +122,8 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         int confirmedRequests = commonRequestService.findConfirmedRequests(List.of(event)).size();
 
         List<ParticipationRequest> requestsToUpdate = requestRepository.findAllByIdIn(request.getRequestIds());
+        EventRequestStatusUpdateResult eventRequestStatusUpdateResult = new EventRequestStatusUpdateResult();
+        List<ParticipationRequestDto> requestDtos;
         switch (request.getStatus()) {
             case REJECTED:
                 for (ParticipationRequest r : requestsToUpdate) {
@@ -131,6 +134,9 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
 
                     r.setStatus(State.CANCELED);
                 }
+                requestDtos = requestRepository.saveAll(requestsToUpdate)
+                        .stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
+                eventRequestStatusUpdateResult.setRejectedRequests(requestDtos);
                 break;
             case CONFIRMED:
                 for (ParticipationRequest r : requestsToUpdate) {
@@ -146,11 +152,11 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
                     r.setStatus(State.PUBLISHED);
                     confirmedRequests++;
                 }
+                requestDtos = requestRepository.saveAll(requestsToUpdate)
+                        .stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
+                eventRequestStatusUpdateResult.setConfirmedRequests(requestDtos);
                 break;
         }
-
-
-        return requestRepository.saveAll(requestsToUpdate)
-                .stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
+        return eventRequestStatusUpdateResult;
     }
 }

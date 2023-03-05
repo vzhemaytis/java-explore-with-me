@@ -1,6 +1,7 @@
 package ru.ewm.service.participation.service;
 
 import ru.ewm.service.participation.dto.EventRequestStatusUpdateRequest;
+import ru.ewm.service.participation.dto.EventRequestStatusUpdateResult;
 import ru.ewm.service.participation.dto.ParticipationRequestDto;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface PrivateRequestService {
 
     List<ParticipationRequestDto> getEventRequests(Long userId, Long eventId);
 
-    List<ParticipationRequestDto> updateRequests(Long userId,
-                                                 Long eventId,
-                                                 EventRequestStatusUpdateRequest request);
+    EventRequestStatusUpdateResult updateRequests(Long userId,
+                                                  Long eventId,
+                                                  EventRequestStatusUpdateRequest request);
 }
