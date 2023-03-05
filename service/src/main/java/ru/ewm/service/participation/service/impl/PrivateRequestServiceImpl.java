@@ -133,7 +133,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
                         throw new ForbiddenException("Request must have status PENDING");
                     }
 
-                    r.setStatus(RequestState.CANCELED);
+                    r.setStatus(RequestState.REJECTED);
                 }
                 requestDtos = requestRepository.saveAll(requestsToUpdate)
                         .stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
