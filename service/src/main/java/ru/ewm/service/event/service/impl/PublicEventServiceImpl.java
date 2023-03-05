@@ -91,6 +91,7 @@ public class PublicEventServiceImpl implements PublicEventService {
         }
 
         LocalDateTime timestamp = LocalDateTime.now();
+        hitsClient.saveNewHit(APP_NAME, "/events", ip, timestamp);
         foundEvents.forEach(event -> hitsClient.saveNewHit(APP_NAME, "/events/" + event.getId(), ip, timestamp));
 
         if (sort != null && sort.equals(SortTypes.VIEWS)) {
