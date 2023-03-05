@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.ewm.service.constants.State;
+import ru.ewm.service.constants.RequestState;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,7 @@ public class ParticipationRequestDto {
     private Long event;
     private Long id;
     private Long requester;
-    private State status;
+    private RequestState status;
 
     @Override
     public String toString() {

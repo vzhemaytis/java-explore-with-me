@@ -3,6 +3,7 @@ package ru.ewm.service.participation.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ewm.service.constants.RequestState;
 import ru.ewm.service.constants.State;
 import ru.ewm.service.error.ForbiddenException;
 import ru.ewm.service.event.model.Event;
@@ -65,9 +66,9 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         participationRequest.setRequester(requester);
 
         if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
-            participationRequest.setStatus(State.PUBLISHED);
+            participationRequest.setStatus(RequestState.CONFIRMED);
         } else {
-            participationRequest.setStatus(State.PENDING);
+            participationRequest.setStatus(RequestState.PENDING);
         }
 
         return toParticipationRequestDto(requestRepository.save(participationRequest));
@@ -88,7 +89,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         if (!request.getRequester().equals(requester)) {
             throw new ForbiddenException("participation request could be cancelled only by requester");
         }
-        request.setStatus(State.CANCELED);
+        request.setStatus(RequestState.CANCELED);
         return toParticipationRequestDto(requestRepository.save(request));
     }
 
@@ -128,11 +129,11 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
             case REJECTED:
                 for (ParticipationRequest r : requestsToUpdate) {
 
-                    if (!r.getStatus().equals(State.PENDING)) {
+                    if (!r.getStatus().equals(RequestState.PENDING)) {
                         throw new ForbiddenException("Request must have status PENDING");
                     }
 
-                    r.setStatus(State.CANCELED);
+                    r.setStatus(RequestState.CANCELED);
                 }
                 requestDtos = requestRepository.saveAll(requestsToUpdate)
                         .stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
@@ -141,7 +142,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
             case CONFIRMED:
                 for (ParticipationRequest r : requestsToUpdate) {
 
-                    if (!r.getStatus().equals(State.PENDING)) {
+                    if (!r.getStatus().equals(RequestState.PENDING)) {
                         throw new ForbiddenException("Request must have status PENDING");
                     }
 
@@ -149,7 +150,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
                         throw new ForbiddenException("The participant limit has been reached");
                     }
 
-                    r.setStatus(State.PUBLISHED);
+                    r.setStatus(RequestState.CONFIRMED);
                     confirmedRequests++;
                 }
                 requestDtos = requestRepository.saveAll(requestsToUpdate)

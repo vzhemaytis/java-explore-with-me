@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.ewm.service.constants.State;
+import ru.ewm.service.constants.RequestState;
 import ru.ewm.service.event.model.Event;
 import ru.ewm.service.user.model.User;
 
@@ -30,7 +30,7 @@ public class ParticipationRequest {
     @JoinColumn(name = "requester_id")
     private User requester;
     @Enumerated(EnumType.STRING)
-    private State status;
+    private RequestState status;
 
     @Override
     public boolean equals(Object o) {
