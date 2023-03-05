@@ -40,6 +40,6 @@ public class AdminCompilationController {
                                                     @RequestBody @NotNull UpdateCompilationRequest updateRequest) {
         log.info("update compilation with id = {}", compId);
         return new ResponseEntity<>(adminCompilationService
-                .updateCompilation(compId, updateRequest), HttpStatus.NO_CONTENT);
+                .updateCompilation(compId, updateRequest), HttpStatus.OK);
     }
 }
