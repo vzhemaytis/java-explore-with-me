@@ -57,7 +57,8 @@ CREATE TABLE IF NOT EXISTS compilations
     pinned BOOLEAN                                 NOT NULL,
     title  VARCHAR(120)                            NOT NULL,
     CONSTRAINT pk_compilations
-        PRIMARY KEY (id)
+        PRIMARY KEY (id),
+    CONSTRAINT uq_title UNIQUE (title)
 );
 CREATE TABLE IF NOT EXISTS compilation_event
 (

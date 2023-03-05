@@ -105,6 +105,4 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
 
         return views;
     }
-
-
 }

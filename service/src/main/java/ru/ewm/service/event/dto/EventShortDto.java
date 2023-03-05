@@ -27,4 +27,12 @@ public class EventShortDto {
     private Boolean paid;
     private String title;
     private long views;
+
+    @Override
+    public String toString() {
+        return "EventShortDto{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                '}';
+    }
 }

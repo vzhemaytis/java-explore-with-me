@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.ewm.service.category.model.Category;
 import ru.ewm.service.category.repository.CategoryRepository;
+import ru.ewm.service.compilation.model.Compilation;
+import ru.ewm.service.compilation.repository.CompilationRepository;
 import ru.ewm.service.error.EntityNotFoundException;
 import ru.ewm.service.event.model.Event;
 import ru.ewm.service.event.repository.EventRepository;
@@ -21,6 +23,7 @@ public class EntityFoundValidator {
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
+    private final CompilationRepository compilationRepository;
 
     public User checkIfUserExist(Long userId) {
         Optional<User> user = userRepository.findById(userId);
@@ -52,5 +55,13 @@ public class EntityFoundValidator {
             throw new EntityNotFoundException(requestId, ParticipationRequest.class.getSimpleName());
         }
         return request.get();
+    }
+
+    public Compilation checkIfCompilationExist(Long compId) {
+        Optional<Compilation> compilation = compilationRepository.findById(compId);
+        if (compilation.isEmpty()) {
+            throw new EntityNotFoundException(compId, Compilation.class.getSimpleName());
+        }
+        return compilation.get();
     }
 }
