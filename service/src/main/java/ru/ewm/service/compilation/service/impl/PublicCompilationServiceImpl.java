@@ -25,6 +25,7 @@ import static ru.ewm.service.compilation.mapper.CompilationMapper.toCompilationD
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PublicCompilationServiceImpl implements PublicCompilationService {
 
     private final CompilationRepository compilationRepository;
@@ -32,7 +33,6 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
     private final CommonEventService commonEventService;
     private final CommonRequestService commonRequestService;
 
-    @Transactional
     @Override
     public CompilationDto getCompilation(Long compId) {
         Compilation foundCompilation = entityFoundValidator.checkIfCompilationExist(compId);
@@ -53,7 +53,6 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
         return compilationDto;
     }
 
-    @Transactional
     @Override
     public List<CompilationDto> findCompilations(boolean pinned, long from, int size) {
         PageRequest pageRequest = PageRequest.of(0, size);

@@ -25,6 +25,7 @@ import static ru.ewm.service.compilation.mapper.CompilationMapper.toCompilationD
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdminCompilationServiceImpl implements AdminCompilationService {
 
     private final CompilationRepository compilationRepository;
@@ -33,7 +34,6 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     private final CommonRequestService commonRequestService;
     private final EntityFoundValidator entityFoundValidator;
 
-    @Transactional
     @Override
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
         Compilation compilationToSave = toCompilation(newCompilationDto);
@@ -56,14 +56,12 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
         return compilationDto;
     }
 
-    @Transactional
     @Override
     public void deleteCompilation(Long compId) {
         entityFoundValidator.checkIfCompilationExist(compId);
         compilationRepository.deleteById(compId);
     }
 
-    @Transactional
     @Override
     public CompilationDto updateCompilation(Long compId, UpdateCompilationRequest updateRequest) {
         Compilation compilationToUpdate = entityFoundValidator.checkIfCompilationExist(compId);

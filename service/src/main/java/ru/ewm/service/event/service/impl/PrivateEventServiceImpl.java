@@ -32,13 +32,13 @@ import static ru.ewm.service.event.mapper.EventMapper.toEventFullDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PrivateEventServiceImpl implements PrivateEventService {
     private final EventRepository eventRepository;
     private final EntityFoundValidator entityFoundValidator;
     private final CommonEventService commonEventService;
     private final CommonRequestService commonRequestService;
 
-    @Transactional
     @Override
     public EventFullDto addEvent(Long userId, NewEventDto newEventDto) {
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
@@ -54,7 +54,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         return toEventFullDto(eventRepository.save(eventToSave));
     }
 
-    @Transactional
     @Override
     public List<EventFullDto> getUserEvents(Long userId, long from, int size) {
         PageRequest pageRequest = PageRequest.of(0, size);
@@ -79,7 +78,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         return eventFullDtos;
     }
 
-    @Transactional
     @Override
     public EventFullDto getUserEvent(Long userId, Long eventId) {
         Event eventToReturn = entityFoundValidator.checkIfEventExist(eventId);
@@ -98,7 +96,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         return eventFullDto;
     }
 
-    @Transactional
     @Override
     public EventFullDto updateEvent(Long userId, Long eventId, UpdateEventRequest updateEventUserRequest) {
         Event eventToUpdate = entityFoundValidator.checkIfEventExist(eventId);

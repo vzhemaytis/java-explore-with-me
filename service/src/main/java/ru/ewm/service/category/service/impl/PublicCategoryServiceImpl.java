@@ -19,10 +19,10 @@ import static ru.ewm.service.category.mapper.CategoryMapper.toCategoryDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PublicCategoryServiceImpl implements PublicCategoryService {
     private final CategoryRepository categoryRepository;
 
-    @Transactional
     @Override
     public List<CategoryDto> getCategories(Long from, Integer size) {
         PageRequest pageRequest = PageRequest.of(0, size);
@@ -31,7 +31,6 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
         return foundCategories.stream().map(CategoryMapper::toCategoryDto).collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public CategoryDto getCategoryById(Long catId) {
         Optional<Category> foundCategory = categoryRepository.findById(catId);

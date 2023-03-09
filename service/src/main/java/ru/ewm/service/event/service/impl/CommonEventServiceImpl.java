@@ -5,6 +5,7 @@ import dto.ViewStatsDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.ewm.service.category.model.Category;
 import ru.ewm.service.constants.State;
 import ru.ewm.service.error.ForbiddenException;
@@ -22,6 +23,7 @@ import static ru.ewm.service.constants.Constants.DATE_TIME_FORMATTER;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CommonEventServiceImpl implements ru.ewm.service.event.service.CommonEventService {
 
     private final EntityFoundValidator entityFoundValidator;

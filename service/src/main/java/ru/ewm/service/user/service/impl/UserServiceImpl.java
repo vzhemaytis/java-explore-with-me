@@ -21,11 +21,11 @@ import static ru.ewm.service.user.mapper.UserMapper.toUserDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    @Transactional
     @Override
     public UserDto addUser(NewUserRequest userDto) {
         User userToSave = toUser(userDto);
@@ -33,7 +33,6 @@ public class UserServiceImpl implements UserService {
         return toUserDto(savedUser);
     }
 
-    @Transactional
     @Override
     public void deleteUser(Long userId) {
         try {
@@ -43,14 +42,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
     @Override
     public List<UserDto> getUsers(List<Long> ids) {
         List<User> foundUsers = userRepository.findAllById(ids);
         return foundUsers.stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public List<UserDto> getAllUsers(long from, int size) {
         PageRequest pageSize = PageRequest.of(0, size);

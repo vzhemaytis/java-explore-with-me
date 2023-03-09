@@ -27,41 +27,27 @@ public class EntityFoundValidator {
 
     public User checkIfUserExist(Long userId) {
         Optional<User> user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            throw new EntityNotFoundException(userId, User.class.getSimpleName());
-        }
-        return user.get();
+        return user.orElseThrow(() -> new EntityNotFoundException(userId, User.class.getSimpleName()));
     }
 
     public Event checkIfEventExist(Long eventId) {
         Optional<Event> event = eventRepository.findById(eventId);
-        if (event.isEmpty()) {
-            throw new EntityNotFoundException(eventId, Event.class.getSimpleName());
-        }
-        return event.get();
+        return event.orElseThrow(() -> new EntityNotFoundException(eventId, Event.class.getSimpleName()));
     }
 
     public Category checkIfCategoryExist(Long catId) {
         Optional<Category> category = categoryRepository.findById(catId);
-        if (category.isEmpty()) {
-            throw new EntityNotFoundException(catId, Category.class.getSimpleName());
-        }
-        return category.get();
+        return category.orElseThrow(() -> new EntityNotFoundException(catId, Category.class.getSimpleName()));
     }
 
     public ParticipationRequest checkIfRequestExist(Long requestId) {
         Optional<ParticipationRequest> request = requestRepository.findById(requestId);
-        if (request.isEmpty()) {
-            throw new EntityNotFoundException(requestId, ParticipationRequest.class.getSimpleName());
-        }
-        return request.get();
+        return request
+                .orElseThrow(() -> new EntityNotFoundException(requestId, ParticipationRequest.class.getSimpleName()));
     }
 
     public Compilation checkIfCompilationExist(Long compId) {
         Optional<Compilation> compilation = compilationRepository.findById(compId);
-        if (compilation.isEmpty()) {
-            throw new EntityNotFoundException(compId, Compilation.class.getSimpleName());
-        }
-        return compilation.get();
+        return compilation.orElseThrow(() -> new EntityNotFoundException(compId, Compilation.class.getSimpleName()));
     }
 }

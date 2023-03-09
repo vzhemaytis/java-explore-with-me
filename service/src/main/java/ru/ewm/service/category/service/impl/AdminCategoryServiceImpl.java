@@ -18,18 +18,17 @@ import static ru.ewm.service.category.mapper.CategoryMapper.toCategoryDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    @Transactional
     @Override
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
         Category categoryToSave = toCategory(newCategoryDto);
         return toCategoryDto(categoryRepository.save(categoryToSave));
     }
 
-    @Transactional
     @Override
     public void deleteCategory(Long catId) {
         try {
@@ -39,7 +38,6 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         }
     }
 
-    @Transactional
     @Override
     public CategoryDto updateCategory(Long catId, NewCategoryDto newCategoryDto) {
         Optional<Category> foundCategory = categoryRepository.findById(catId);

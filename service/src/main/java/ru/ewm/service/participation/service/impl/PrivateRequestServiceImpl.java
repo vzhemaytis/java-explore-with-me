@@ -27,13 +27,13 @@ import static ru.ewm.service.participation.mapper.RequestMapper.toParticipationR
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PrivateRequestServiceImpl implements PrivateRequestService {
 
     private final RequestRepository requestRepository;
     private final EntityFoundValidator entityFoundValidator;
     private final CommonRequestService commonRequestService;
 
-    @Transactional
     @Override
     public ParticipationRequestDto addRequest(Long userId, Long eventId) {
         User requester = entityFoundValidator.checkIfUserExist(userId);
@@ -74,14 +74,12 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         return toParticipationRequestDto(requestRepository.save(participationRequest));
     }
 
-    @Transactional
     @Override
     public List<ParticipationRequestDto> findAllUsersRequests(Long userId) {
         List<ParticipationRequest> foundRequests = requestRepository.findAllByRequesterIdIs(userId);
         return foundRequests.stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         User requester = entityFoundValidator.checkIfUserExist(userId);
@@ -93,7 +91,6 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         return toParticipationRequestDto(requestRepository.save(request));
     }
 
-    @Transactional
     @Override
     public List<ParticipationRequestDto> getEventRequests(Long userId, Long eventId) {
         User initiator = entityFoundValidator.checkIfUserExist(userId);
@@ -105,7 +102,6 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         return foundRequests.stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
     }
 
-    @Transactional
     @Override
     public EventRequestStatusUpdateResult updateRequests(Long userId,
                                                         Long eventId,

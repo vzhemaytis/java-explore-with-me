@@ -23,13 +23,13 @@ import static ru.ewm.service.event.mapper.EventMapper.toEventFullDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdminEventServiceImpl implements AdminEventService {
 
     private final EventRepository eventRepository;
     private final EntityFoundValidator entityFoundValidator;
     private final CommonEventService commonEventService;
 
-    @Transactional
     @Override
     public List<EventFullDto> adminEventSearch(List<Long> users,
                                                List<State> states,
@@ -51,7 +51,6 @@ public class AdminEventServiceImpl implements AdminEventService {
         return eventFullDtos;
     }
 
-    @Transactional
     @Override
     public EventFullDto updateEvent(Long eventId, UpdateEventRequest updateEventAdminRequest) {
         Event eventToUpdate = entityFoundValidator.checkIfEventExist(eventId);

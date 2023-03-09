@@ -28,6 +28,7 @@ import static ru.ewm.service.event.mapper.EventMapper.toEventFullDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PublicEventServiceImpl implements PublicEventService {
 
     private final EventRepository eventRepository;
@@ -36,7 +37,6 @@ public class PublicEventServiceImpl implements PublicEventService {
     private final CommonEventService commonEventService;
     private final CommonRequestService commonRequestService;
 
-    @Transactional
     @Override
     public EventFullDto getEvent(Long id, HttpServletRequest request) {
         Event eventToReturn = entityFoundValidator.checkIfEventExist(id);
@@ -59,7 +59,6 @@ public class PublicEventServiceImpl implements PublicEventService {
         return eventFullDto;
     }
 
-    @Transactional
     @Override
     public List<EventFullDto> publicEventSearch(String text,
                                                 List<Long> categories,
