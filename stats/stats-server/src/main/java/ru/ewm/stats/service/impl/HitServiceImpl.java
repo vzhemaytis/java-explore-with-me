@@ -17,18 +17,18 @@ import static ru.ewm.stats.mapper.EndpointHitMapper.toEndpointHitDto;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class HitServiceImpl implements HitService {
 
     private final EndpointHitRepository repository;
 
-    @Transactional
     @Override
     public EndpointHitDto saveNewHit(EndpointHitDto hitDto) {
-        EndpointHit hit = toEndpointHit(hitDto);
-        return toEndpointHitDto(repository.save(hit));
+        EndpointHit savedHit = repository.save(toEndpointHit(hitDto));
+
+        return toEndpointHitDto(savedHit);
     }
 
-    @Transactional
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         if (unique) {

@@ -4,6 +4,7 @@ import dto.EndpointHitDto;
 import dto.ViewStatsDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,8 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HitController {
     private final HitService hitService;
-    private final String pattern = "yyyy-MM-dd HH:mm:ss";
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 
     @PostMapping("/hit")
     public ResponseEntity<Object> saveNewHit(@RequestBody @Valid EndpointHitDto hitDto) {
@@ -31,19 +32,19 @@ public class HitController {
         return new ResponseEntity<>(savedHit, HttpStatus.CREATED);
     }
 
-    @GetMapping("stats")
-    public ResponseEntity<Object> getStats(@RequestParam(name = "start") String start,
-                                           @RequestParam(name = "end") String end,
+    @GetMapping("/stats")
+    public ResponseEntity<Object> getStats(@RequestParam(name = "start")
+                                           @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime start,
+                                           @RequestParam(name = "end")
+                                           @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime end,
                                            @RequestParam(name = "uris", defaultValue = "") List<String> uris,
                                            @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
-        LocalDateTime startDateTime = LocalDateTime.parse(start, dateTimeFormatter);
-        LocalDateTime endDateTime = LocalDateTime.parse(end, dateTimeFormatter);
-        if (startDateTime.isAfter(LocalDateTime.now())) {
+        if (start.isAfter(LocalDateTime.now())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         log.info("get stats from = {} till = {} about uris = {} with unique ids = {}",
-                startDateTime, endDateTime, uris, unique);
-        List<ViewStatsDto> stats = hitService.getStats(startDateTime, endDateTime, uris, unique);
+                start, end, uris, unique);
+        List<ViewStatsDto> stats = hitService.getStats(start, end, uris, unique);
         return new ResponseEntity<>(stats, HttpStatus.OK);
     }
 }
