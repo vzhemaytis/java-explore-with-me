@@ -96,12 +96,9 @@ public class CommonEventServiceImpl implements ru.ewm.service.event.service.Comm
 
         Map<Long, Long> views = new HashMap<>();
         for (Long id : ids) {
-            Long eventViews = 0L;
             Optional<Long> viewsOptional = stats.stream()
                     .filter(s -> s.getUri().equals("/events/" + id)).map(ViewStatsDto::getHits).findFirst();
-            if (viewsOptional.isPresent()) {
-                eventViews = viewsOptional.get();
-            }
+            Long eventViews = viewsOptional.orElse(0L);
             views.put(id, eventViews);
         }
 

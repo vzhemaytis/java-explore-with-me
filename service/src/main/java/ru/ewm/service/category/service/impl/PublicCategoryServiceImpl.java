@@ -34,9 +34,8 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
     @Override
     public CategoryDto getCategoryById(Long catId) {
         Optional<Category> foundCategory = categoryRepository.findById(catId);
-        if (foundCategory.isEmpty()) {
-            throw new EntityNotFoundException(catId, Category.class.getSimpleName());
-        }
-        return toCategoryDto(categoryRepository.save(foundCategory.get()));
+        return toCategoryDto(categoryRepository
+                .save(foundCategory
+                        .orElseThrow(() -> new EntityNotFoundException(catId, Category.class.getSimpleName()))));
     }
 }

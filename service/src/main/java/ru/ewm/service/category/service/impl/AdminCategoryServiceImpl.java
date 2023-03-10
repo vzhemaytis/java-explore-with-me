@@ -41,11 +41,8 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Override
     public CategoryDto updateCategory(Long catId, NewCategoryDto newCategoryDto) {
         Optional<Category> foundCategory = categoryRepository.findById(catId);
-        if (foundCategory.isEmpty()) {
-            throw new EntityNotFoundException(catId, Category.class.getSimpleName());
-
-        }
-        Category categoryToUpdate = foundCategory.get();
+        Category categoryToUpdate = foundCategory
+                .orElseThrow(() -> new EntityNotFoundException(catId, Category.class.getSimpleName()));
         categoryToUpdate.setName(newCategoryDto.getName());
         return toCategoryDto(categoryRepository.save(categoryToUpdate));
     }

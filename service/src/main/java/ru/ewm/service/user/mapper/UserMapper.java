@@ -1,13 +1,14 @@
 package ru.ewm.service.user.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.ewm.service.user.dto.NewUserRequest;
 import ru.ewm.service.user.dto.UserDto;
 import ru.ewm.service.user.dto.UserShortDto;
 import ru.ewm.service.user.model.User;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
-    private UserMapper() {
-    }
 
     public static User toUser(NewUserRequest userDto) {
         User user = new User();

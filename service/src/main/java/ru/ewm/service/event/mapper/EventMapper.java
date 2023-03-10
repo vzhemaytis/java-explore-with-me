@@ -1,5 +1,7 @@
 package ru.ewm.service.event.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.ewm.service.category.model.Category;
 import ru.ewm.service.event.dto.EventFullDto;
 import ru.ewm.service.event.dto.EventShortDto;
@@ -9,9 +11,8 @@ import ru.ewm.service.event.model.Event;
 import static ru.ewm.service.category.mapper.CategoryMapper.toCategoryDto;
 import static ru.ewm.service.user.mapper.UserMapper.toUserShortDto;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EventMapper {
-    private EventMapper() {
-    }
 
     public static Event toEvent(NewEventDto newEventDto) {
         Event event = new Event();

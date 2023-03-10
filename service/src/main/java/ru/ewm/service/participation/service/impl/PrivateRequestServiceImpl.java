@@ -42,9 +42,9 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         Optional<ParticipationRequest> optionalRequest = requestRepository
                 .findFirstByEventIdIsAndRequesterIdIs(event.getId(), requester.getId());
 
-        if (optionalRequest.isPresent()) {
+        optionalRequest.ifPresent(r -> {
             throw new ForbiddenException("participation request for this event is already exist");
-        }
+        });
 
         if (event.getInitiator().equals(requester)) {
             throw new ForbiddenException("participation request could not be created by event initiator");
