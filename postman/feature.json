@@ -967,7 +967,7 @@
 							"        pm.collectionVariables.set('eid', event.id);\r",
 							"        const subscription = await api.addSubscription(userToFollow.id, user.id);\r",
 							"        pm.collectionVariables.set('subId', subscription.id);\r",
-							"        const foundEvents = await api.getSubscriptionEvents(user.id);\r",
+							"        let foundEvents = await api.getSubscriptionEvents(user.id);\r",
 							"        pm.collectionVariables.set(\"response\", foundEvents);\r",
 							"    } catch(err) {\r",
 							"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
@@ -1219,27 +1219,27 @@
 		{
 			"key": "uid",
 			"value": "1",
-			"type": "string"
+			"type": "number"
 		},
 		{
 			"key": "uid1",
 			"value": "2",
-			"type": "string"
+			"type": "number"
 		},
 		{
 			"key": "subId",
 			"value": "1",
-			"type": "string"
+			"type": "number"
 		},
 		{
 			"key": "uid2",
 			"value": "1",
-			"type": "string"
+			"type": "number"
 		},
 		{
 			"key": "eid",
 			"value": "1",
-			"type": "string"
+			"type": "number"
 		},
 		{
 			"key": "response",
