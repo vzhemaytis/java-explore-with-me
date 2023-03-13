@@ -1243,8 +1243,7 @@
 		},
 		{
 			"key": "response",
-			"value": "",
-			"type": "string"
+			"value": ""
 		}
 	]
 }
