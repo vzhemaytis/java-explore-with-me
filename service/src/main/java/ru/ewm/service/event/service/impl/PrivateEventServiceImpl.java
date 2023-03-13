@@ -2,9 +2,11 @@ package ru.ewm.service.event.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ewm.service.category.model.Category;
+import ru.ewm.service.constants.SortTypes;
 import ru.ewm.service.constants.State;
 import ru.ewm.service.error.EntityNotFoundException;
 import ru.ewm.service.error.ForbiddenException;
@@ -18,10 +20,13 @@ import ru.ewm.service.event.service.CommonEventService;
 import ru.ewm.service.event.service.PrivateEventService;
 import ru.ewm.service.participation.model.ParticipationRequest;
 import ru.ewm.service.participation.service.CommonRequestService;
+import ru.ewm.service.subscription.model.Subscription;
+import ru.ewm.service.subscription.service.CommonSubscriptionService;
 import ru.ewm.service.user.model.User;
 import ru.ewm.service.validation.EntityFoundValidator;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,6 +43,8 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final EntityFoundValidator entityFoundValidator;
     private final CommonEventService commonEventService;
     private final CommonRequestService commonRequestService;
+    private final CommonSubscriptionService commonSubscriptionService;
+
 
     @Override
     public EventFullDto addEvent(Long userId, NewEventDto newEventDto) {
@@ -112,5 +119,42 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 break;
         }
         return toEventFullDto(eventRepository.save(updatedEvent));
+    }
+
+    @Override
+    public List<EventFullDto> getAllFollowedUsersEvents(Long userId, long from, int size, SortTypes sort) {
+        List<Subscription> userSubscriptions = commonSubscriptionService.getAllActiveSubscriptionsByFollowerId(userId);
+        List<User> followedUsers = userSubscriptions.stream().map(Subscription::getUser).collect(Collectors.toList());
+        List<Long> initiatorIds = followedUsers.stream().map(User::getId).collect(Collectors.toList());
+
+        PageRequest pageRequest = PageRequest.of(0, size, Sort.by("eventDate"));
+        List<Event> foundEvents = eventRepository.findSubscriptionsEvents(
+                        from,
+                        initiatorIds,
+                        State.PUBLISHED,
+                        LocalDateTime.now(),
+                        pageRequest);
+
+        List<EventFullDto> eventFullDtos = foundEvents.stream()
+                .map(EventMapper::toEventFullDto).collect(Collectors.toList());
+
+        Map<Long, Long> views = commonEventService.getStats(foundEvents, false);
+        if (!views.isEmpty()) {
+            eventFullDtos.forEach(e -> e.setViews(views.get(e.getId())));
+        }
+
+        List<ParticipationRequest> confirmedRequests = commonRequestService.findConfirmedRequests(foundEvents);
+        for (EventFullDto fullDto : eventFullDtos) {
+            fullDto.setConfirmedRequests((int) confirmedRequests.stream()
+                    .filter(request -> request.getEvent().getId().equals(fullDto.getId()))
+                    .count());
+        }
+
+        if (sort != null && sort.equals(SortTypes.VIEWS)) {
+            return eventFullDtos.stream()
+                    .sorted(Comparator.comparing(EventFullDto::getViews)).collect(Collectors.toList());
+        }
+
+        return eventFullDtos;
     }
 }
