@@ -125,6 +125,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     public List<EventFullDto> getAllFollowedUsersEvents(Long userId, long from, int size, SortTypes sort) {
         List<Subscription> userSubscriptions = commonSubscriptionService.getAllActiveSubscriptionsByFollowerId(userId);
         List<User> followedUsers = userSubscriptions.stream().map(Subscription::getUser).collect(Collectors.toList());
+        if (followedUsers.isEmpty()) {
+            return List.of();
+        }
         List<Long> initiatorIds = followedUsers.stream().map(User::getId).collect(Collectors.toList());
 
         PageRequest pageRequest = PageRequest.of(0, size, Sort.by("eventDate"));
