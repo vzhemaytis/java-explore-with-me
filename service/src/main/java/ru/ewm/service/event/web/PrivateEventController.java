@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.ewm.service.constants.SortTypes;
 import ru.ewm.service.event.dto.NewEventDto;
 import ru.ewm.service.event.dto.UpdateEventUserRequest;
 import ru.ewm.service.event.service.PrivateEventService;
@@ -54,5 +55,16 @@ public class PrivateEventController {
         log.info("update event with id = {} by user with id = {}", eventId, userId);
         return new ResponseEntity<>(privateEventService
                 .updateEvent(userId, eventId, updateEventUserRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("/subscriptions")
+    public ResponseEntity<Object> getAllFollowedUsersEvents(
+            @PathVariable Long userId,
+            @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero long from,
+            @RequestParam(name = "size", defaultValue = "10") @Positive int size,
+            @RequestParam(name = "sort", required = false) SortTypes sort) {
+        log.info("get all followed users events by user with id = {}", userId);
+        return new ResponseEntity<>(privateEventService
+                .getAllFollowedUsersEvents(userId, from, size, sort), HttpStatus.OK);
     }
 }

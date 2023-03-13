@@ -11,6 +11,8 @@ import ru.ewm.service.event.model.Event;
 import ru.ewm.service.event.repository.EventRepository;
 import ru.ewm.service.participation.model.ParticipationRequest;
 import ru.ewm.service.participation.repository.RequestRepository;
+import ru.ewm.service.subscription.model.Subscription;
+import ru.ewm.service.subscription.repository.SubscriptionRepository;
 import ru.ewm.service.user.model.User;
 import ru.ewm.service.user.repository.UserRepository;
 
@@ -24,6 +26,7 @@ public class EntityFoundValidator {
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
     private final CompilationRepository compilationRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     public User checkIfUserExist(Long userId) {
         Optional<User> user = userRepository.findById(userId);
@@ -49,5 +52,10 @@ public class EntityFoundValidator {
     public Compilation checkIfCompilationExist(Long compId) {
         Optional<Compilation> compilation = compilationRepository.findById(compId);
         return compilation.orElseThrow(() -> new EntityNotFoundException(compId, Compilation.class.getSimpleName()));
+    }
+
+    public Subscription checkIfSubscriptionExist(Long subId) {
+        Optional<Subscription> subscription = subscriptionRepository.findById(subId);
+        return subscription.orElseThrow(() -> new EntityNotFoundException(subId, Subscription.class.getSimpleName()));
     }
 }
