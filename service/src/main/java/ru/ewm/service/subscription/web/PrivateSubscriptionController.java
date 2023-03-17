@@ -6,7 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.ewm.service.constants.SortTypes;
+import ru.ewm.service.event.service.PrivateEventService;
 import ru.ewm.service.subscription.service.PrivateSubscriptionService;
+
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping(path = "/users/{userId}")
@@ -15,6 +20,7 @@ import ru.ewm.service.subscription.service.PrivateSubscriptionService;
 @RequiredArgsConstructor
 public class PrivateSubscriptionController {
     private final PrivateSubscriptionService subscriptionService;
+    private final PrivateEventService privateEventService;
 
     @PostMapping("/subscriptions")
     public ResponseEntity<Object> addSubscription(@PathVariable(name = "userId") Long followerId,
@@ -32,4 +38,14 @@ public class PrivateSubscriptionController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/events/subscriptions")
+    public ResponseEntity<Object> getAllFollowedUsersEvents(
+            @PathVariable Long userId,
+            @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero long from,
+            @RequestParam(name = "size", defaultValue = "10") @Positive int size,
+            @RequestParam(name = "sort", required = false) SortTypes sort) {
+        log.info("get all followed users events by user with id = {}", userId);
+        return new ResponseEntity<>(privateEventService
+                .getAllFollowedUsersEvents(userId, from, size, sort), HttpStatus.OK);
+    }
 }

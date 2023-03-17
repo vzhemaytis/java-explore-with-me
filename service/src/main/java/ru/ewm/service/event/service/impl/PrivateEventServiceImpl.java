@@ -26,10 +26,7 @@ import ru.ewm.service.user.model.User;
 import ru.ewm.service.validation.EntityFoundValidator;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.ewm.service.event.mapper.EventMapper.toEvent;
@@ -126,7 +123,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         List<Subscription> userSubscriptions = commonSubscriptionService.getAllActiveSubscriptionsByFollowerId(userId);
         List<User> followedUsers = userSubscriptions.stream().map(Subscription::getUser).collect(Collectors.toList());
         if (followedUsers.isEmpty()) {
-            return List.of();
+            return Collections.emptyList();
         }
         List<Long> initiatorIds = followedUsers.stream().map(User::getId).collect(Collectors.toList());
 
