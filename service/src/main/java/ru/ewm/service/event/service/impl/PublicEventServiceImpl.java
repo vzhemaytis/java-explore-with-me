@@ -71,9 +71,10 @@ public class PublicEventServiceImpl implements PublicEventService {
                                                 int size,
                                                 String ip) {
 
-        List<Event> foundEvents = eventRepository.publicEventSearch(text, categories, paid, rangeStart, rangeEnd, from, size);
+        List<Event> foundEvents = eventRepository
+                .publicEventSearch(text, categories, paid, rangeStart, rangeEnd, from, size);
         if (foundEvents.isEmpty()) {
-            return List.of();
+            return Collections.emptyList();
         }
 
         List<EventFullDto> eventFullDtos = foundEvents.stream()
